@@ -49,6 +49,7 @@ export default {
   name: "Intime",
   data() {
     return {
+      rand:20,
       timer1: "",
       tableData: [
         {
@@ -115,19 +116,26 @@ export default {
         // console.log(newVal, oldVal);
         //修改数据 发送请求
         let myChart = this.$echarts.init(document.getElementById("zexian"));
-        if (this.zexianArrA.length < 6) {
+        //数据请求地址修改
+        this.$axios({
+          url: "http://localhost:3000",
+          method: "get",
+          params: {},
+        }).then((res) => {
+          // console.log(res);
+          if (this.zexianArrA.length < 6) {
           this.zexianArrA.push(this.postdate.fen + ":" + this.postdate.miao);
-
-          this.zexianArrB.push(Math.ceil(Math.random() * 400));
-          this.zexianArrC.push(Math.ceil(Math.random() * 400));
+          this.zexianArrB.push(res.data.temp1);
+          this.zexianArrC.push(res.data.temp2);
         } else {
           this.zexianArrA.push(this.postdate.fen + ":" + this.postdate.miao);
           this.zexianArrA.shift();
-          this.zexianArrB.push(Math.ceil(Math.random() * 400));
+          this.zexianArrB.push(res.data.temp1);
           this.zexianArrB.shift();
-          this.zexianArrC.push(Math.ceil(Math.random() * 400));
+          this.zexianArrC.push(res.data.temp2);
           this.zexianArrC.shift();
         }
+        });
         myChart.setOption({
           xAxis: {
             data: this.zexianArrA,
@@ -143,9 +151,10 @@ export default {
             },
           ],
         });
-        //发送请求
+        //数据请求地址修改
         this.jishi++;
         if (this.jishi == 6) {
+          //每一次6s的时候 重新选择随机数 以编号为准 
           let temp = 0;
           let lunbo = document.querySelector("#lunbo");
           var that = this;
@@ -203,6 +212,7 @@ export default {
 
           this.jishi = 0;
         }
+        //更新this.tableData
       },
       deep: true,
     },
